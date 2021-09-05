@@ -8,3 +8,9 @@ todo_response_schema = {
     'date': fields.String,
     'active': fields.Boolean
 }
+
+user_response_schema = {
+    'id': fields.String,
+    'username': fields.String,
+    'password': fields.String
+}
