@@ -1,7 +1,8 @@
-from flask_restful import Resource, marshal_with, abort
+from flask_restful import Resource, abort
+from flask_apispec import marshal_with
 from database import db
 from datetime import datetime
-from schema.response_schema import todo_response_schema
+from schema.response_schema import TodoResponseSchema
 from schema.request_schema import todo_query_param, todo_request_schema, todo_update_request_schema
 from models.todo import Todo
 import uuid
@@ -30,14 +31,14 @@ def get_active_or_inactive_todos(is_active):
 
 
 class TodoOperationsWithId(Resource):
-    @marshal_with(todo_response_schema)
+    @marshal_with(TodoResponseSchema)
     def get(self, id):
         response = Todo.query.filter_by(id = id).first()
         if not response:
             abort(404, message="Todo Not Found")
         return response
 
-    @marshal_with(todo_response_schema)
+    @marshal_with(TodoResponseSchema)
     def put(self, id):
         try:
             response = Todo.query.filter_by(id=id).first()
@@ -52,7 +53,7 @@ class TodoOperationsWithId(Resource):
 
 
 class TodoOperations(Resource):
-    @marshal_with(todo_response_schema)
+    @marshal_with(TodoResponseSchema)
     def get(self):
         args = todo_query_param.parse_args()
         active = args['active']

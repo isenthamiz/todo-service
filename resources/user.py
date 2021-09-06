@@ -1,9 +1,11 @@
 from flask import request, current_app
-from flask_restful import Resource, marshal_with,abort
+from flask_apispec import marshal_with
+from flask_apispec.views import MethodResource
+from flask_restful import Resource, abort
 from werkzeug.security import generate_password_hash, check_password_hash
 from database import db
-from schema.request_schema import user_create_request_schema, session_header_request
-from schema.response_schema import user_response_schema
+from schema.request_schema import user_create_request_schema
+from schema.response_schema import UserResponseSchema
 from models.user import User
 from middleware import token_required
 import uuid
@@ -11,8 +13,8 @@ import jwt
 import datetime
 
 
-class UserOperations(Resource):
-    @marshal_with(user_response_schema)
+class UserOperations(MethodResource, Resource):
+    @marshal_with(UserResponseSchema)
     @token_required
     def get(self, current_user):
         users = User.query.all()
@@ -28,8 +30,9 @@ class UserOperations(Resource):
         db.session.commit()
         return {"id": id}, 201
 
-class UserById(Resource):
-    @marshal_with(user_response_schema)
+
+class UserById(MethodResource, Resource):
+    @marshal_with(UserResponseSchema)
     @token_required
     def get(self, current_user, id):
         user = User.query.filter_by(id = id).first()
@@ -43,7 +46,7 @@ class UserById(Resource):
         return {}, 200
 
 
-class GenerateJWTToken(Resource):
+class GenerateJWTToken(MethodResource, Resource):
         def get(self):
             auth = request.authorization
             if not auth or not auth.username or not auth.password:
